@@ -9,7 +9,7 @@ fi
 gcc -v
 
 git clone https://github.com/netblue30/firejail.git firejail-repo
-(cd firejail-repo && git checkout $GITHUB_REF_NAME && ./configure --disable-globalcfg && make -j3)
+(cd firejail-repo && git checkout $GITHUB_REF_NAME && ./configure && make -j3)
 mv firejail-repo/src/firejail/firejail .
 
 strip firejail
