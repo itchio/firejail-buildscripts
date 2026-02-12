@@ -4,22 +4,20 @@ export CI_OS="linux"
 
 if [ "$CI_ARCH" = "amd64" ]; then
   export CFLAGS=-m64 CXXFLAGS=-m64 LDFLAGS=-m64
-else
-  export CFLAGS=-m32 CXXFLAGS=-m32 LDFLAGS=-m32
 fi
 
 7za | head -2
 gcc -v
 
 export FIREJAIL_VERSION=head
-export CI_VERSION=$CI_BUILD_REF_NAME
-if [ -n "$CI_BUILD_TAG" ]; then
-  export FIREJAIL_VERSION=$CI_BUILD_TAG
-  export CI_VERSION=v${CI_BUILD_REF_NAME}
+export CI_VERSION=$GITHUB_REF_NAME
+if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+  export FIREJAIL_VERSION=$GITHUB_REF_NAME
+  export CI_VERSION=v${GITHUB_REF_NAME}
 fi
 
 git clone https://github.com/netblue30/firejail.git firejail-repo
-(cd firejail-repo && git checkout $CI_BUILD_REF_NAME && ./configure --disable-globalcfg && make -j3)
+(cd firejail-repo && git checkout $GITHUB_REF_NAME && ./configure --disable-globalcfg && make -j3)
 mv firejail-repo/src/firejail/firejail .
 
 strip firejail
@@ -44,7 +42,6 @@ mv firejail $BINARIES_DIR/$CI_VERSION
 
 (cd $BINARIES_DIR/$CI_VERSION && sha1sum * > SHA1SUMS)
 
-if [ -n "$CI_BUILD_TAG" ]; then
-  echo $CI_BUILD_TAG > $BINARIES_DIR/LATEST
+if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+  echo $GITHUB_REF_NAME > $BINARIES_DIR/LATEST
 fi
-
