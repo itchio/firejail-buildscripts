@@ -1,3 +1,3 @@
 #!/bin/sh -xe
-# placeholder deploy - just show collected artifacts
 ls -lR binaries/
+gh release create "$GITHUB_REF_NAME" binaries/* --generate-notes
